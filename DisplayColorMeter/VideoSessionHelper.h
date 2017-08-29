@@ -9,8 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger) {
+    vs_effective_nonmal,
+    vs_effective_inner,
+}VideoSessionHelper_Effective;
+
 @interface VideoSessionHelper : NSObject
 
-- (void)configSessionWithPreviewLayerSuperLayer:(CALayer*)superLayer;
+- (void)configSessionWithPreviewLayerSuperView:(UIView*)superView option:(VideoSessionHelper_Effective)option;
 
 @end

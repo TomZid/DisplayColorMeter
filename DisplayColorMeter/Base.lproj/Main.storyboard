@@ -37,7 +37,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aym-GX-n3O" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1073" y="603"/>
+            <point key="canvasLocation" x="1787.0503597122304" y="602.87769784172667"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="A5s-ix-5Wy">
@@ -67,12 +67,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oJL-8H-9lI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2020" y="603"/>
+            <point key="canvasLocation" x="2733.9928057553957" y="602.87769784172667"/>
         </scene>
         <!--Camera View Controller-->
         <scene sceneID="7OG-Hz-Obr">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CxH-JH-KG6" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="cameraVC" id="Wjo-tx-LYQ" customClass="CameraViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Pb9-tC-qhj"/>
@@ -97,13 +96,13 @@
                     </view>
                     <navigationItem key="navigationItem" id="Vk7-tT-LR3"/>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CxH-JH-KG6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="120.86330935251799" y="602.87769784172667"/>
+            <point key="canvasLocation" x="835.25179856115108" y="602.87769784172667"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="uPS-nM-l0x">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Bur-W1-LgI" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController clearsSelectionOnViewWillAppear="NO" id="lIr-lr-EzW" customClass="MainTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="hZN-og-2oD">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="834"/>
@@ -173,11 +172,12 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="46s-8G-bSZ"/>
                     <connections>
-                        <segue destination="Wjo-tx-LYQ" kind="showDetail" identifier="cameraSegue" id="p5D-ub-iva"/>
+                        <segue destination="pS7-Or-mNt" kind="showDetail" identifier="cameraSegue" id="p5D-ub-iva"/>
                         <segue destination="naX-Uo-ToP" kind="showDetail" identifier="pictureSegue" id="fMF-y2-RO2"/>
                         <segue destination="V2v-KC-6lT" kind="showDetail" identifier="TakePhotoSegue" id="IDd-Ux-jY5"/>
                     </connections>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Bur-W1-LgI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1073" y="-330"/>
         </scene>
@@ -203,15 +203,33 @@
                 <splitViewController id="wQd-F4-cun" sceneMemberID="viewController">
                     <connections>
                         <segue destination="h2z-vy-2TT" kind="relationship" relationship="masterViewController" id="eGE-YI-4v6"/>
-                        <segue destination="Wjo-tx-LYQ" kind="relationship" relationship="detailViewController" id="s7F-Qi-Eox"/>
+                        <segue destination="pS7-Or-mNt" kind="relationship" relationship="detailViewController" id="s7F-Qi-Eox"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rol-hy-RlG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-831" y="88"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="3Nh-re-o7m">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pS7-Or-mNt" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="xGb-5Q-kiy">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Wjo-tx-LYQ" kind="relationship" relationship="rootViewController" id="06X-5M-cla"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="epd-ol-iP3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="120.86330935251799" y="602.87769784172667"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="p5D-ub-iva"/>
+        <segue reference="s7F-Qi-Eox"/>
     </inferredMetricsTieBreakers>
 </document>

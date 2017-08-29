@@ -18,7 +18,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    [[VideoSessionHelper new] configSessionWithPreviewLayerSuperLayer:self.view.layer];
+    [[VideoSessionHelper new] configSessionWithPreviewLayerSuperView:self.view option:1];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self.view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj layoutSubviews];
+    }];
 }
 
 @end

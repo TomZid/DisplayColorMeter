@@ -9,15 +9,34 @@
 #import "VideoSessionHelper.h"
 #import <AVFoundation/AVFoundation.h>
 
+@interface IntermediateView : UIView @end
+
+@implementation IntermediateView
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self.layer.sublayers enumerateObjectsUsingBlock:^(CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.frame = self.superview.frame;
+    }];
+}
+
+@end
+
+static IntermediateView *_temV;
+
 @interface VideoSessionHelper () <AVCaptureVideoDataOutputSampleBufferDelegate>
 {
     AVCaptureSession *_session;
     AVCaptureVideoPreviewLayer *_previewLayer;
+    
+    VideoSessionHelper_Effective _option;
 }
 @end
 
 @implementation VideoSessionHelper
-- (void)configSessionWithPreviewLayerSuperLayer:(CALayer*)superLayer {
+- (void)configSessionWithPreviewLayerSuperView:(UIView*)superView option:(VideoSessionHelper_Effective)option {
+    _option = option;
+    
     _session = [AVCaptureSession new];
     _session.sessionPreset = AVCaptureSessionPreset640x480;
     
@@ -67,14 +86,87 @@
     [_session commitConfiguration];
     [_session startRunning];
     
-    {
-        _previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_session];
-        [_previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-        [_previewLayer setFrame:[UIScreen mainScreen].bounds];
-        [superLayer addSublayer:_previewLayer];
-    }
+    _previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_session];
+    [_previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+    [_previewLayer setFrame:[UIScreen mainScreen].bounds];
+    _temV = [[IntermediateView alloc] initWithFrame:superView.bounds];
+    [_temV.layer addSublayer:_previewLayer];
+    [superView addSubview:_temV];
+    
+    /*
+    [superView addConstraints:@[
+                                [NSLayoutConstraint constraintWithItem:_temV attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeTop multiplier:1 constant:0],
+                                [NSLayoutConstraint constraintWithItem:_temV attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeBottom multiplier:1 constant:0],
+                                [NSLayoutConstraint constraintWithItem:_temV attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
+                                [NSLayoutConstraint constraintWithItem:_temV attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:superView attribute:NSLayoutAttributeRight multiplier:1 constant:0],
+                                ]];
+    */
+}
+
+- (void)imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer
+{
+    // Get a CMSampleBuffer's Core Video image buffer for the media data
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    
+    // Lock the base address of the pixel buffer
+    CVPixelBufferLockBaseAddress(imageBuffer, 0);
+    
+    // Get the number of bytes per row for the pixel buffer
+    void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+    
+    // Get the number of bytes per row for the pixel buffer
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+    
+    // Get the pixel buffer width and height
+    size_t width = CVPixelBufferGetWidth(imageBuffer);
+    size_t height = CVPixelBufferGetHeight(imageBuffer);
+    
+    //    NSLog(@"w: %zu h: %zu bytesPerRow:%zu", width, height, bytesPerRow);
+    
+    // Create a device-dependent RGB color space
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    
+    // Create a bitmap graphics context with the sample buffer data
+    CGContextRef context = CGBitmapContextCreate(baseAddress,
+                                                 width,
+                                                 height,
+                                                 8,
+                                                 bytesPerRow,
+                                                 colorSpace,
+                                                 kCGBitmapByteOrder32Little
+                                                 | kCGImageAlphaPremultipliedFirst);
+    // Create a Quartz image from the pixel data in the bitmap graphics context
+    CGImageRef quartzImage = CGBitmapContextCreateImage(context);
+    // Unlock the pixel buffer
+    CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+    
+    // Free up the context and color space
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    
+    // Create an image object from the Quartz image
+    UIImage *image = [UIImage imageWithCGImage:quartzImage];
+    //    UIImage *image = [UIImage imageWithCGImage:quartzImage
+    //                                         scale:1.0f
+    //                                   orientation:UIImageOrientationRight];
+    
+    // Release the Quartz image
+    CGImageRelease(quartzImage);
+    
+//    _previewLayer.contents = CFBridgingRelease(image.CGImage);
 }
 
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+    @autoreleasepool {
+        
+        if (_option == vs_effective_nonmal) {
+            
+        }else if (_option == vs_effective_inner){
+            [self imageFromSampleBuffer:sampleBuffer];
+        }
+        
+    }
+}
 
 @end
