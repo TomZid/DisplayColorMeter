@@ -19,6 +19,8 @@
     __weak IBOutlet UILabel     *_blueLabel;
     __weak IBOutlet UIView     *_colorHub;
     
+    CGPoint __block             _anchorPoint;
+    
     GPUImageVideoCamera         *_videoCamera;
     GPUImageView                *_filteredVideoView;
     GPUImageRawDataOutput       *_videoRawData;
@@ -29,6 +31,7 @@
 @implementation CameraViewController
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.view removeObserver:self forKeyPath:@"frame"];
 }
 
 - (void)viewDidLoad {
@@ -59,10 +62,9 @@
     __weak typeof(_videoRawData) videoRawData_ws = _videoRawData;
     typeof(self) __weak ws = self;
     typeof(self) __strong ss = ws;
+    _anchorPoint = CGPointMake(480 / 2, 640 / 2);
     [_videoRawData setNewFrameAvailableBlock:^{
-        CGPoint point = CGPointMake(ws.view.bounds.size.width / 2, ws.view.bounds.size.height / 2);
-        point = CGPointMake(480 / 2, 640 / 2);
-        GPUByteColorVector colorVector = [videoRawData_ws colorAtLocation:point];
+        GPUByteColorVector colorVector = [videoRawData_ws colorAtLocation:_anchorPoint];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (ss != nil) {
                 ss->_redLabel.text = [@(colorVector.red) stringValue];
@@ -82,6 +84,7 @@
 
 - (void)addObserver {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    [self.view addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -94,7 +97,15 @@
 - (void)orientation:(NSNotification*)notification {
     UIInterfaceOrientation newOrientation = [[[notification userInfo] valueForKey:@"new"] integerValue];
     _videoCamera.outputImageOrientation = newOrientation;
-//    [_videoRawData setImageSize:CGSizeMake(<#CGFloat width#>, <#CGFloat height#>)];
+    if (newOrientation == UIInterfaceOrientationPortrait) {
+        _anchorPoint = CGPointMake(480 / 2, 640 / 2);
+    }else {
+        _anchorPoint = CGPointMake(640 / 2, 480 / 2);
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+//    CGRect new = [change[@"new"] CGRectValue];
 }
 
 @end
